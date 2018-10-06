@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Monte carlo methods in python — fruendlab blog</title>
+	<meta name="description" content="Title: Monte carlo methods in python; Date: 2018-10-05; Author: Ingo Fruend">
+	<meta name="author" content="Ingo Fruend">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+		<![endif]-->
+	<link href="/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/css/local.css" rel="stylesheet">
+	<link href="/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="/">fruendlab blog</a>
+			<br>	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Monte carlo methods in python</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Ingo Fruend</h4>
+		</span>
+		<time datetime="2018-10-05T00:00:00-04:00" itemprop="datePublished">Fri 05 October 2018</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="/category/statistics.html" rel="category">Statistics</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="/tag/python.html" rel="tag">python</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/statistics.html" rel="tag">statistics</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/pandas.html" rel="tag">pandas</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>Monte carlo methods are a class of statistical procedures that rely on random number generation to arrive at conclusions.
+There are many, arbitrarily complex methods that can involve pretty elaborate simulation strategies.
+This post will focus on two pretty simple, non-parametric methods and how to implement them in python.
+These two methods address two of the most important questions in applied statistics</p>
+<ol>
+<li>How certain can I be about an estimate?</li>
+<li>Is a difference between two estimates larger than expected by chance alone?</li>
+</ol>
+<p>In addressing these two questions, I will also present <a href="http://www.python.org">python</a> implementations and I will illustrate how these can be used with <a href="https://pandas.pydata.org/">pandas</a> data frames.</p>
+<h1>The bootstrap: How certain can I be about an estimate?</h1>
+<p>The idea of the bootstrap is simple: Use the empirical distribution as a replacement of the true underlying data distribution.
+What is the empirical distribution?
+It is simple the data that you observed!
+The bootstrap simply generates datasets that are similar to the observed dataset by sampling with replacement from the dataset.
+The idea is that the standard deviation of estimates derived from these re-sampled datasets should be a good approximation to the true standard error of your estimator.
+Here is a python function that implements a very simple form of the bootstrap</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">bootstrap</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">,</span> <span class="n">nsamples</span><span class="o">=</span><span class="mi">2000</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">estimator</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)])</span>
+               <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsamples</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">summary</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This function takes a dataset as the first argument.
+In principle, this dataset can be anything in which observations can be indexed by integers along the first dimension &mdash; vectors, matrices, pandas data frames, ...
+The second argument is an <code>estimator</code>; this function takes a dataset and returns a number that summarizes the dataset.
+If no <code>estimator</code> is specified, the summary number will be the mean of the dataset, but it could be any other measure as well.
+In fact, the estimator could even create a vector valued output if the <code>summary</code> function is chosen correctly (we won't discuss that any further here).
+The third argument is a function that summarizes the variability of the samples.
+By default we summarize variability by the standard deviation, but another interesting choice might be based on <code>np.percentile</code>.
+Finally, we can specify how many "fake" datasets will be derived from the original dataset to estimate the variability of the statistic computed by the <code>estimator</code> function.</p>
+<p>Today, data analysis in python is usually done using pandas and the <code>bootstrap</code> function above is well suited to be used with pandas' groupby-apply logic.
+This is illustrated in the following code snippet:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;observer&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="s1">&#39;iscorrect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="p">})</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;observer&#39;</span><span class="p">)</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="n">accuracy</span><span class="p">[</span><span class="s1">&#39;sem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">bootstrap</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;iscorrect&#39;</span><span class="p">]))</span>
+</pre></div>
+
+
+<h1>Permutation tests: Is this difference larger than chance variability?</h1>
+<p>The second question mentioned above is testing for differences.
+Ideally, we would like to apply a similar approach here, that doesn't require any assumptions about the true distribution of data.
+Permutation tests satisfy this requirement.
+Say you have a vector <span class="math">\(x\)</span> of <span class="math">\(n\)</span> observations, where some observations were made under condition 1 and others were made under condition 2.
+We can summarize this association by a second vector <span class="math">\(C=(c_i)_{i=1}^n\)</span>, such that <span class="math">\(c_i = 1\)</span> if <span class="math">\(x_i\)</span> was observed under condition 1 and <span class="math">\(c_i = 2\)</span> if <span class="math">\(x_i\)</span> was observed under condition 2.
+Permutation tests simply take the vector <span class="math">\(C\)</span>, reshuffle it and calculate the difference between conditions 1 and 2 for each of the reshuffled versions.
+This random reshuffling simulates a null-hypothesis of the form: There is no difference between the two conditions.
+For small datasets, we can actually go through all possible permutations of <span class="math">\(C\)</span>, but for larger datasets that can quickly become too much.
+Here is a python implementation of a permutation test that simply generates a number of random permutations:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">permutation_test</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="n">nsamples</span><span class="o">=</span><span class="mi">2000</span><span class="p">):</span>
+    <span class="n">differences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nsamples</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
+    <span class="n">observed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">conditions</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">conditions</span> <span class="o">==</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">conditions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsamples</span><span class="p">):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">differences</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">c</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">c</span> <span class="o">==</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">observed</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">differences</span> <span class="o">&gt;=</span> <span class="n">observed</span><span class="p">)</span>
+</pre></div>
+
+
+<p>To apply this permutation test to the above data frame <code>df</code>, we can't directly use the elegance of pandas.
+Instead, we would simply do (note that we call this function with the underlying numpy arrays, to allow for random assessment of values)</p>
+<div class="highlight"><pre><span></span><span class="n">permutation_test</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;iscorrect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;observer&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This returns two values, the observed difference between conditions (in this case observer 1 is 20% better than observer 2) and a <span class="math">\(p\)</span> value.
+The <span class="math">\(p\)</span> value would be close to 0.5 for this example and due to the sampling it is subject to some small variability.
+Increasing the number of monte carlo samples (<code>nsamples</code>) will reduce this variability.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></div>
+	<hr>
+	<h2>Comments</h2>
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="">fruendlab blog</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Author</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://github.com/fruendlab">github</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="/category/statistics.html">Statistics (1)</a></li>
+							<li><a href="/category/stimuli-and-displays.html">Stimuli and displays (1)</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Links</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="http://yorku.ca/ifruend">York University</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Ingo Fruend 2016</p>
+			<p>Powered by Pelican</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
