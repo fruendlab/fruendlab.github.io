@@ -1,3 +1,19 @@
+a {
+  color: #5e9bff;
+}
+
+a:hover {
+  color: #083d91;
+}
+
+.bg-danger {
+  color: #f4f8ff;
+  background-color: #f4f8ff;
+}
+
+pre, code {
+  background-color: #f4f8ff !important;
+}
 
 .my-list-style {
     margin-left: 0;
