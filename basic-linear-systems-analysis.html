@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Basic linear systems analysis — fruendlab blog</title>
+	<meta name="description" content="Title: Basic linear systems analysis; Date: 2018-10-06; Author: Ingo Fruend">
+	<meta name="author" content="Ingo Fruend">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+		<![endif]-->
+	<link href="/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/css/local.css" rel="stylesheet">
+	<link href="/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="/">fruendlab blog</a>
+			<br>	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Basic linear systems analysis</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Ingo Fruend</h4>
+		</span>
+		<time datetime="2018-10-06T00:00:00-04:00" itemprop="datePublished">Sat 06 October 2018</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="/category/theory.html" rel="category">Theory</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="/tag/psychophysics.html" rel="tag">psychophysics</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/linear-systems.html" rel="tag">linear systems</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>In psychophysics, we attempt to characterize the visual system by means of
+input-output relations.
+We present an image to the observer (input) and we study how the
+observer's response (output) changes as we change properties of the image.
+Linear systems are about the simplest input-output systems and although
+they are overly simplistic as a model for the entire visual system, they
+often provide useful descriptions of behaviour in very restricted tasks
+and with very restricted stimulus classes.
+Apart from that, many important experimental paradigms are derived from
+and inspired by methods that characterize linear systems.</p>
+<p>This blog post will present the basics of linear systems analysis in the
+context of psychophysics.
+The characterizations in this post are &mdash; although theoretically
+useful &mdash; of limited practical applicability.
+Follow up posts will present methods that are more applicable in specific
+experiments.</p>
+<h1>Simplifying assumptions</h1>
+<p>Formally, we can think of an input-output system as a function <span class="math">\(f\)</span> that takes
+a collection of inputs <span class="math">\(x\)</span> together with some external variables <span class="math">\(t\)</span> (such
+as time and location) and maps them to a collection of outputs <span class="math">\(y
+= f(x, t)\)</span>.
+In a strict sense, <span class="math">\(x\)</span> should be all the inputs that the system will ever
+encounter and <span class="math">\(y\)</span> would then be all the outputs that the system will ever
+generate from these inputs.
+This allows for all kinds of interactions between inputs at different
+times and locations, that would allow the system to model behaviours such
+as learning.
+This is obviously quite complicated to study which is why we will here
+restrict our attention to <em>time invariant</em> systems, that do not change
+over time.
+For such systems, we can write <span class="math">\(y = f(x)\)</span>.
+Note however, that <span class="math">\(x\)</span> and <span class="math">\(y\)</span> are still <em>vectors</em>.
+For example <span class="math">\(x\)</span> could be a vector of the intensities of each pixel in an
+image.
+This allows for the fact that the system combines different pixel
+locations to derive the output of a single output location.
+However, by having the system be independent of <span class="math">\(t\)</span>, the reference to
+other pixel locations can only be relative.
+In other words, the system could combine <span class="math">\(x_i\)</span> with <span class="math">\(x_{i+1}\)</span> for
+arbitrary <span class="math">\(i\)</span>, but it could not combine <span class="math">\(x_i\)</span> and <span class="math">\(x_t\)</span> for a fixed <span class="math">\(t\)</span>
+that's independent of <span class="math">\(x\)</span> itself.</p>
+<p>The output form the linear system would also be a vector.
+We could for example think of it as a vector of neural responses to that
+image.
+In psychophysics, we often have responses that are button presses; The
+observer either pressed button 1 or button 2.
+We can usually derive such a button press response from the vector <span class="math">\(y\)</span>
+using methods from {tag}signal detection theory.
+However, that will be a topic for another post.</p>
+<h1>What does it mean if a system is linear?</h1>
+<p>When I ask people what they think makes a function linear, they often say
+something about a line.
+Although that's not entirely true, it really doesn't capture the essential
+part.
+A function, such as <span class="math">\(f\)</span> here, is linear if it obeys what is called the
+<em>principle of superposition</em>.
+Let <span class="math">\(x_1\)</span> and <span class="math">\(x_2\)</span> be two possible inputs and <span class="math">\(a\)</span> and <span class="math">\(b\)</span> two numbers,
+then <span class="math">\(f\)</span> is linear if</p>
+<div class="math">$$
+f(ax_1 + bx_2) = af(x_1) + bf(x_2).
+$$</div>
+<p>In other words, the response of a weighted sum of inputs is a weighted sum
+of the corresponding outputs.</p>
+<p>In order to really appreciate this point, let's rewrite the linearity
+definition in two statements.
+Then <span class="math">\(f\)</span> is linear if</p>
+<ol>
+<li><span class="math">\(f(ax) = af(x)\)</span>, and</li>
+<li><span class="math">\(f(x_1 + x_2) = f(x_1) + f(x_2)\)</span>.</li>
+</ol>
+<p>Can you prove that these two statements together are equivalent to the
+definition above?</p>
+<p>One implication of this is that we can characterize a linear system with
+pretty sparse measurements.
+Once we know the response to <span class="math">\(x\)</span>, we know the response to <em>any</em> scaled
+version <span class="math">\(ax\)</span> of <span class="math">\(x\)</span>.
+Furthermore, if we know the responses to two inputs <span class="math">\(x_1\)</span> and <span class="math">\(x_2\)</span>, we
+know the responses to their sum <span class="math">\(x_1 + x_2\)</span> through (2) and we even know
+the responses to any weighted sum <span class="math">\(ax_1 + bx_2\)</span>.</p>
+<h1>The impulse response function as a universal description</h1>
+<p>Linearity becomes particularly powerful in combination with a set of test
+inputs <span class="math">\(x_t, t=1,...,N\)</span> such that their weighted sums span all potentially
+relevant inputs.
+One combination of these test inputs are the impulse functions</p>
+<div class="math">$$
+x_t(i) = \begin{cases}
+1, \mathrm{if}\; t=i\\
+0, \mathrm{otherwise.}
+\end{cases}
+$$</div>
+<p>Note that the index <span class="math">\(t\)</span> goes over both time and/or space.
+Thus, if we have a system that ignores the time dimension, <span class="math">\(t\)</span> would be
+space and the <span class="math">\(x_t\)</span> would be images that are zero everywhere except for
+the <span class="math">\(t\)</span>-th pixel.
+We can write every possible image <span class="math">\(a\)</span> as a sum of these single pixel images
+<span class="math">\(x_t\)</span> by just multiplying each <span class="math">\(x_t\)</span> with the image's intensity at location <span class="math">\(t\)</span>, i.e.</p>
+<div class="math">$$
+a = \sum_{t=1}^N a(t) x_t,
+$$</div>
+<p>Note that we use different notations here: <span class="math">\(a\)</span> is a whole image and <span class="math">\(a(t)\)</span>
+is the number that represents the intensity of that image at location <span class="math">\(t\)</span>.
+On the other hand <span class="math">\(x_t\)</span> is a whole image and <span class="math">\(x_t(t)\)</span> would be one, while
+<span class="math">\(x_t(s)\)</span> would be 0 if <span class="math">\(t\neq s\)</span>.
+Thus, it is sufficient to know the responses of a linear system
+to the <span class="math">\(x_t\)</span> to know the responses of a linear system to every possible
+image.</p>
+<p>For one-dimensional input signals <span class="math">\(x_t\)</span> and a time-invariant linear
+system, we further find that</p>
+<div class="math">$$
+f(\sum_{t=1}^N a(t) x_t)(i) = \sum_{t=1}^N a(t) f(x_t)(i).
+$$</div>
+<p>Furthermore, because the <span class="math">\(x_t\)</span> are simply shifted versions of <span class="math">\(x_0\)</span> and
+because <span class="math">\(f\)</span> is time-invariant, the response <span class="math">\(f(x_t)\)</span> will simply be
+a shifted version of <span class="math">\(f(x_0)\)</span>.
+Let's call <span class="math">\(f(x_0)=:h\)</span> the <em>impulse response</em> of the linear system <span class="math">\(f\)</span>, then we write</p>
+<div class="math">$$
+f(\sum_{t=1}^N a(t) x_t)(i) = \sum_{t=1}^N a(t) h(i-t) = (a*h)(i)
+$$</div>
+<p>The operation <span class="math">\(*\)</span> is called <em>convolution</em>.
+Thus, we found that the response of a linear system is given by the
+convolution of the input with the system's impulse response.
+This statement applies for higher dimensional inputs as well, although the
+convolution is a little more complicated.</p>
+<p>The important point here is, that we can fully characterize
+a time-invariant linear system if we know its impulse response. However,
+the impulse response is fairly easy to measure compared to the response to
+any arbitrary stimulus.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></div>
+    <!--
+	<hr>
+	<h2>Comments</h2>
+    -->
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="">fruendlab blog</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Author</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://github.com/fruendlab">github</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="/category/statistics.html">Statistics (1)</a></li>
+							<li><a href="/category/stimuli-and-displays.html">Stimuli and displays (1)</a></li>
+							<li><a href="/category/theory.html">Theory (1)</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Links</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="http://yorku.ca/ifruend">York University</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Ingo Fruend 2016</p>
+			<p>Powered by Pelican</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
