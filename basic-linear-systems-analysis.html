@@ -133,38 +133,43 @@ inputs <span class="math">\(x_t, t=1,...,N\)</span> such that their weighted sum
 relevant inputs.
 One combination of these test inputs are the impulse functions</p>
 <div class="math">$$
-x_t(i) = \begin{cases}
+\delta_t(i) = \begin{cases}
 1, \mathrm{if}\; t=i\\
 0, \mathrm{otherwise.}
 \end{cases}
 $$</div>
 <p>Note that the index <span class="math">\(t\)</span> goes over both time and/or space.
 Thus, if we have a system that ignores the time dimension, <span class="math">\(t\)</span> would be
-space and the <span class="math">\(x_t\)</span> would be images that are zero everywhere except for
+space and the <span class="math">\(\delta_t\)</span> would be images that are zero everywhere except for
 the <span class="math">\(t\)</span>-th pixel.
 We can write every possible image <span class="math">\(a\)</span> as a sum of these single pixel images
-<span class="math">\(x_t\)</span> by just multiplying each <span class="math">\(x_t\)</span> with the image's intensity at location <span class="math">\(t\)</span>, i.e.</p>
+<span class="math">\(\delta_t\)</span> by just multiplying each <span class="math">\(\delta_t\)</span> with the image's intensity
+at location <span class="math">\(t\)</span>, i.e.</p>
 <div class="math">$$
-a = \sum_{t=1}^N a(t) x_t,
+a = \sum_{t=1}^N a(t) \delta_t,
 $$</div>
 <p>Note that we use different notations here: <span class="math">\(a\)</span> is a whole image and <span class="math">\(a(t)\)</span>
 is the number that represents the intensity of that image at location <span class="math">\(t\)</span>.
-On the other hand <span class="math">\(x_t\)</span> is a whole image and <span class="math">\(x_t(t)\)</span> would be one, while
-<span class="math">\(x_t(s)\)</span> would be 0 if <span class="math">\(t\neq s\)</span>.
+On the other hand <span class="math">\(\delta_t\)</span> is a whole image and <span class="math">\(\delta_t(t)\)</span> would be the number one, while
+<span class="math">\(\delta_t(s)\)</span> would be the number 0 if <span class="math">\(t\neq s\)</span>.
 Thus, it is sufficient to know the responses of a linear system
-to the <span class="math">\(x_t\)</span> to know the responses of a linear system to every possible
+to the <span class="math">\(\delta_t\)</span> to know the responses of a linear system to every possible
 image.</p>
-<p>For one-dimensional input signals <span class="math">\(x_t\)</span> and a time-invariant linear
+<p>For one-dimensional input signals <span class="math">\(x\)</span> and a time-invariant linear
 system, we further find that</p>
 <div class="math">$$
-f(\sum_{t=1}^N a(t) x_t)(i) = \sum_{t=1}^N a(t) f(x_t)(i).
+f(\sum_{t=1}^N a(t) \delta_t)(i) = \sum_{t=1}^N a(t) f(\delta_t)(i).
 $$</div>
-<p>Furthermore, because the <span class="math">\(x_t\)</span> are simply shifted versions of <span class="math">\(x_0\)</span> and
-because <span class="math">\(f\)</span> is time-invariant, the response <span class="math">\(f(x_t)\)</span> will simply be
-a shifted version of <span class="math">\(f(x_0)\)</span>.
-Let's call <span class="math">\(f(x_0)=:h\)</span> the <em>impulse response</em> of the linear system <span class="math">\(f\)</span>, then we write</p>
+<p>Note that the <span class="math">\(\delta_t\)</span> are simply shifted versions of <span class="math">\(\delta_0\)</span>, i.e.</p>
 <div class="math">$$
-f(\sum_{t=1}^N a(t) x_t)(i) = \sum_{t=1}^N a(t) h(i-t) = (a*h)(i)
+\delta_t(s) = \delta_0(s-t).
+$$</div>
+<p>We will therefore write <span class="math">\(\delta:=\delta_0\)</span> and because <span class="math">\(f\)</span> is
+time-invariant, the response <span class="math">\(f(\delta_t)\)</span> will simply be a shifted version of
+<span class="math">\(f(\delta)\)</span>.
+Let's call <span class="math">\(f(\delta)=:h\)</span> the <em>impulse response</em> of the linear system <span class="math">\(f\)</span>, then we write</p>
+<div class="math">$$
+f(\sum_{t=1}^N a(t) \delta_t)(i) = \sum_{t=1}^N a(t) h(i-t) = (a*h)(i)
 $$</div>
 <p>The operation <span class="math">\(*\)</span> is called <em>convolution</em>.
 Thus, we found that the response of a linear system is given by the
@@ -175,6 +180,11 @@ convolution is a little more complicated.</p>
 a time-invariant linear system if we know its impulse response. However,
 the impulse response is fairly easy to measure compared to the response to
 any arbitrary stimulus.</p>
+<p>For example, the <em>point spread function</em> of the eye, which describes how
+a point stimulus at position 0 is spread out by the optics of the eye is
+a measured impulse response.
+We can therefore model the optical processes of the eye by convolution of
+the input image with the point spread function.</p>
 <script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
     var align = "center",
         indent = "0em",
