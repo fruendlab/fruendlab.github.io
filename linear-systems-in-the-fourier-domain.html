@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Linear systems in the Fourier domain — fruendlab blog</title>
+	<meta name="description" content="Title: Linear systems in the Fourier domain; Date: 2018-10-30; Author: Ingo Fruend">
+	<meta name="author" content="Ingo Fruend">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+		<![endif]-->
+	<link href="/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/css/local.css" rel="stylesheet">
+	<link href="/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="/">fruendlab blog</a>
+			<br>	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Linear systems in the Fourier domain</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Ingo Fruend</h4>
+		</span>
+		<time datetime="2018-10-30T00:00:00-04:00" itemprop="datePublished">Tue 30 October 2018</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="/category/theory.html" rel="category">Theory</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="/tag/psychophysics.html" rel="tag">psychophysics</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/linear-systems.html" rel="tag">linear systems</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/fourier-analysis.html" rel="tag">Fourier analysis</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>In a <a href="/basic-linear-systems-analysis.html">previous blog post</a>, we discussed how linear systems can be characterized by their impulse response. However, it is often difficult to stimulate a linear system with perfect pulses. An alternative&mdash;and often insightful&mdash;way of characterizing a linear system is through its <em>frequency response</em>.</p>
+<p>Characterization of linear systems is closely linked to the <em>Fourier theorem</em>:</p>
+<blockquote>
+<p>Under "natural" conditions, we can represent a signal <span class="math">\(x=(x_t)_{t=1}^N\)</span> as
+a superposition of complex sinusoids, i.e.</p>
+<p>
+<div class="math">$$
+x = \sum_k X_k\exp(itk) = \sum_k C_k \cos(tk) + iS_k \sin(tk) = \sum_k A_k\cos(k(t-\phi_k)),
+$$</div>
+</p>
+<p>where <span class="math">\(i=\sqrt{-1}\)</span>.</p>
+</blockquote>
+<p>Here we used three identities.
+Most technical expositions present the Fourier theorem only in terms of the first term, which makes use of complex numbers, i.e. numbers that can be written as <span class="math">\(z=x+iy\)</span>, with <span class="math">\(i=\sqrt{-1}\)</span>. Although these numbers are called "complex", a better name would probably be simplifying numbers, because the simplify many difficult calculations and they certainly do so for the Fourier transform.</p>
+<p>I included the other two identities here, to make the connection to sine waves explicit. The second identity directly uses <a href="https://en.wikipedia.org/wiki/Euler%27s_formula">Euler's identity</a> to emphasize that the terms in the sum are really cosine and sine terms. The last identity is meant to illustrate that the combinations of cosine and sine terms can also be combined into a single shifted cosine function. In this case, we refer to <span class="math">\(A_k\)</span> as the <em>amplitude</em> of the cosine and <span class="math">\(\phi_k\)</span> as the <em>phase</em> of the cosine.</p>
+<p>So, why is the Fourier theorem important to understand linear time invariant systems? The main reason is that the <span class="math">\(\exp(itk)\)</span> are so called <em>eigenvectors</em> of these systems. That means the operation of a linear time invariant system to <span class="math">\(\exp(itk)\)</span> is simple a (complex) multiplication,</p>
+<div class="math">$$
+f(\exp(itk)) = H_k \exp(itk),
+$$</div>
+<p>With a complex number <span class="math">\(H_k\)</span>. In other words, no matter how complex the system is, if it is linear and time invariant, its operation on sinusoids is simply a multiplication by a complex number.
+In particular, we have that <span class="math">\(f(\cos(tk)) = H_k^* \cos(k(t-H_k^\phi))\)</span>, i.e. the operation of the system is a change in the amplitude and the phase of the cosine, but not (for example) the shape or the frequency.</p>
+<p>In a <a href="/basic-linear-systems-analysis.html">previous blog post</a>, we observed that a linear time invariant system is fully characterized by its impulse response. In face, the same is true for a system's frequency response <span class="math">\(H=(..., H_k, H_{k+1}, ...)\)</span>. To see this, we simply take an arbitrary input signal <span class="math">\(x=(x_t)_{t=1}^N\)</span> and we expand it using the Fourier theorem:</p>
+<div class="math">$$
+f(x) = f(\sum_k X_k\exp(ikt)).
+$$</div>
+<p>Because <span class="math">\(f\)</span> is linear, we can move it into the sum to get</p>
+<div class="math">$$
+\sum_k X_k f(\exp(ikt)).
+$$</div>
+<p>Now <span class="math">\(f\)</span> is only operating on the <span class="math">\(\exp(ikt)\)</span> terms and for those, we know that it can be expressed as multiplication with the respective <span class="math">\(H_k\)</span> factor.
+Thus, in total, we have</p>
+<div class="math">$$
+f(x) = \sum_k X_k H_k \exp(ikt) = \sum_k H_k X_k\exp(ikt).
+$$</div>
+<p>Note, that in the Fourier domain, the convolution operation that was needed with the impulse response characterization turns into a simple, pointwise multiplication.</p>
+<p>Note that the frequency response consists of <em>complex numbers</em>.
+That is, every <span class="math">\(H_k\)</span> has a real and an imaginary part.
+ Although complex numbers simplify many calculations, they don't just simply give us an intuitive insight into how the system operates.
+It is therefore common to separate the sequence of <span class="math">\(H_k\)</span> values into <span class="math">\(H_k^*\)</span> and <span class="math">\(H_k^\phi\)</span> sequences.
+The <em>amplitude response</em> <span class="math">\(H_k^*\)</span> describes how much signal components with the frequency <span class="math">\(k\)</span> are attenuated, while the <em>phase response</em> <span class="math">\(H_k^\phi\)</span> describes how much signal components with the frequency <span class="math">\(k\)</span> are shifted.</p>
+<p>It turns out that measuring the phase response of the visual system is not easy, because humans tend to move their eyes when viewing images. However, in a seminal study <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1351748/pdf/jphysiol01098-0040.pdf">Campbell and Robson (1968)</a> have measured the amplitude response function of the visual system using sine gratings.
+They found that <span class="math">\(H_k\)</span> starts low for very low spatial frequency <span class="math">\(k\)</span>, increases up to spatial frequencies of <span class="math">\(k\approx 5\)</span> cycles per degree visual angle (cpd, this number depends a bit on the viewing conditions) and then quickly goes down to zero for frequencies higher than <span class="math">\(k=10\)</span> or <span class="math">\(k=12\)</span>cpd.
+Knowing that the amplitude is essentially 0 for high frequencies means that it is actually sufficient to test the visual system only for frequencies up to about 10cpd.
+That's a managable number of measurements.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></div>
+    <!--
+	<hr>
+	<h2>Comments</h2>
+    -->
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="">fruendlab blog</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Author</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://github.com/fruendlab">github</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="/category/statistics.html">Statistics (1)</a></li>
+							<li><a href="/category/stimuli-and-displays.html">Stimuli and displays (1)</a></li>
+							<li><a href="/category/theory.html">Theory (2)</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Links</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="http://yorku.ca/ifruend">York University</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Ingo Fruend 2016</p>
+			<p>Powered by Pelican</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
