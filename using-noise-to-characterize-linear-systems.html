@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Using noise to characterize linear systems — fruendlab blog</title>
+	<meta name="description" content="Title: Using noise to characterize linear systems; Date: 2018-12-12; Author: Ingo Fruend">
+	<meta name="author" content="Ingo Fruend">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+		<![endif]-->
+	<link href="/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/css/local.css" rel="stylesheet">
+	<link href="/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="/">fruendlab blog</a>
+			<br>	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Using noise to characterize linear systems</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Ingo Fruend</h4>
+		</span>
+		<time datetime="2018-12-12T00:00:00-05:00" itemprop="datePublished">Wed 12 December 2018</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="/category/theory.html" rel="category">Theory</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="/tag/psychophysics.html" rel="tag">psychophysics</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/linear-systems.html" rel="tag">linear systems</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>In <a href="/basic-linear-systems-analysis.html">two</a> <a href="/linear-systems-in-the-fourier-domain.html">previous</a> posts, I talked about linear systems and how we can easily characterize them by stimulating with specific classes of functions, such as impulses or sine functions.
+Here, I would like to talk about a third way of characterizing linear systems, that is commonly used: Responses to noise.</p>
+<p>Let's start by how we can describe noise in the one dimensional case (the same concepts carry over to higher dimensions easily).
+Our noise would then be a sequence of random variables <span class="math">\(x=(x_t)\)</span> (this notation means that <span class="math">\(x\)</span> is a sequence and every element of <span class="math">\(x\)</span> is labelled as <span class="math">\(x_t\)</span>).
+In the simplest case, we would assume that all these random variables are stochastically independent and have the same distribution.
+Many papers refer to that as "iid" for "independent, identically distributed".
+Some engineering papers also talk about "white" noise, which sometimes requires that in addition all the random variables have mean 0 and variance 1.
+Often, we demand a noise sequence to be <em>stationary</em>, which means that the distribution of sequence element <span class="math">\(x_t\)</span> is independent of the specific value of <span class="math">\(t\)</span>, but it could be dependent on other values in the sequence (e.g. <span class="math">\(x_{t-1}\)</span> or <span class="math">\(x_{t+5}\)</span>).
+We have so far focussed on time-invariant linear systems and stationarity is a noise characteristic that corresponds to time-invariance.
+The rest of this blog post will therefore always assume that the noise is stationary.</p>
+<p>We can get a first idea of the characteristics of the noise sequence <span class="math">\(x\)</span> by looking at its <em>autocorrelation function</em>.
+The autocorrelation function (of a stationary noise sequence) describes the correlation between values <span class="math">\(x_t\)</span> and <span class="math">\(x_s\)</span> from the noise sequence as a function of the distance <span class="math">\(t-s\)</span> between them.</p>
+<p><img alt="Example signals and autocorrelation functions" src="/images/autocorrelation.svg"></p>
+<p>The figure shows two example signals with their corresponding autocorrelation functions.
+The top row shows a signal for which subsequent samples are uncorrelated&mdash;left side is the signal, right side is the autocorrelation function. Observe how the autocorrelation function is zero everywhere except for at lag <span class="math">\(t-s=0\)</span>.
+The lower row shows a signal with a clear correlation structure. We can see that neighbouring samples tend to be more similar than samples that are far apart. Looking at the autocorrelation structure, we can see even more: samples that are 4-5 steps apart tend to be negatively correlated and samples that are about 15 steps apart tend to be very slightly positively correlated!
+This is one of the strengths of the autocorrelation function.
+it allows us to quite quickly understand structure in random sequences.</p>
+<p>An important insight is that the autocorrelation function is very similar to convolving the signal with its time reversed self!
+To see this, let's look at the autocorrelation function at an arbitrary lag <span class="math">\(t-s\)</span>.
+For a stationary signal, we can assume that the correlation between <span class="math">\(x_t\)</span> and <span class="math">\(x_s\)</span> is independent of the specific values of <span class="math">\(t\)</span> and <span class="math">\(s\)</span> and we can write the autocorrelation function as</p>
+<div class="math">$$
+c_k = \frac{E[ (x_{t} - \mu)(x_{t-k}-\mu)]}{\sigma^2} = \frac{E(x_tx_{k-t}) - \mu^2}{\sigma^2}.
+$$</div>
+<p>
+Here, we used <span class="math">\(E\)</span> to denote expectation (practically, this is often replaced by the mean <span class="math">\(E_i(x_i)\mapsto\sum_i x_i\)</span>). We note that <span class="math">\(E(x_tx_{k-t})\)</span> is very similar to a convolution of <span class="math">\(x\)</span> with a reversed version of <span class="math">\(x\)</span>, <span class="math">\(x_{reverse}=(x_{-t})\)</span>.
+Thus, if <span class="math">\(x\)</span> has mean <span class="math">\(\mu = 0\)</span> and standard deviation <span class="math">\(\sigma = 1\)</span>, the convolution of the signal with its time reversed self is exactly the same as the autocorrelation and <span class="math">\(\mu\neq 0\)</span> or <span class="math">\(\sigma\neq 1\)</span> result in constant offsets and scaling of the autocorrelation function.</p>
+<p>However, we know what this convolution operation will do to the Fourier transform.
+Specifically, the Fourier transform of the autocorrelation is</p>
+<div class="math">$$
+C_f = X_f \bar{X}_f = |X_f|^2,
+$$</div>
+<p>Where <span class="math">\(\bar{X}\)</span> is called the <a href="https://en.wikipedia.org/wiki/Complex_conjugate">complex conjugate</a> of <span class="math">\(X\)</span> and corresponds to the Fourier transform of the time reversed version of <span class="math">\(X\)</span>.</p>
+<p>We can use this insight in many ways to estimate the frequency response of a linear system.
+Here is the simplest strategy:
+Apply noise with known input power spectrum <span class="math">\(C\)</span> to the system and measure the output power spectrum <span class="math">\(P\)</span>.
+Clearly, the output of the linear system will also be noise, but it will have a different power spectrum that will reflect how the linear system operated on the input noise.
+We can then estimate the frequency response of the linear spectrum as</p>
+<div class="math">$$
+P_f = H_f^2 C_f \implies H_f = \sqrt{P_f/C_f}.
+$$</div>
+<p>This strategy is illustrated in the following figure, using the noise from the first row of the previous figure as input and assuming that the second row showed the output (noise) of the linear system.</p>
+<p><img alt="Example spectra and estimated frequency response" src="/images/linear_system_and_noise.svg"></p>
+<p>The left side shows the power spectrum of the of the input noise (blue) and the output noise (orange). The right side shows frequency response as estimated by the above equation as well as the true frequency response of the linear system that was used to generated the second noise signal form the first one. Given our very simple estimation technique, this is a fairly good estimate.</p>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/latest.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script></div>
+    <!--
+	<hr>
+	<h2>Comments</h2>
+    -->
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="">fruendlab blog</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Author</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://github.com/fruendlab">github</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="/category/statistics.html">Statistics (1)</a></li>
+							<li><a href="/category/stimuli-and-displays.html">Stimuli and displays (1)</a></li>
+							<li><a href="/category/theory.html">Theory (3)</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Links</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="http://yorku.ca/ifruend">York University</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Ingo Fruend 2016</p>
+			<p>Powered by Pelican</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
