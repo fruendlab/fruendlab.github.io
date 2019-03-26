@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Target detection in naturalistic images — fruendlab blog</title>
+	<meta name="description" content="Title: Target detection in naturalistic images; Date: 2019-03-25; Author: Ingo Fruend">
+	<meta name="author" content="Ingo Fruend">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+		<![endif]-->
+	<link href="/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/css/local.css" rel="stylesheet">
+	<link href="/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="/">fruendlab blog</a>
+			<br>	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Target detection in naturalistic images</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Ingo Fruend</h4>
+		</span>
+		<time datetime="2019-03-25T00:00:00-04:00" itemprop="datePublished">Mon 25 March 2019</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="/category/publications.html" rel="category">Publications</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="/tag/psychophysics.html" rel="tag">psychophysics</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/publications.html" rel="tag">publications</a>
+		</span>
+		<span itemprop="keywords">
+			<a href="/tag/gan.html" rel="tag">gan</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>Visual processing is often studied using very simple images such as line drawings or sinusoidal gratings.
+That seems odd given that our visual experience of the world is so much more rich.</p>
+<p><img src="images/gators_vs_grating.svg"/></p>
+<p>Compare the two images. The one on the left is a low contrast grating, much like what classical studies on visual perception used.
+The one on the right is a random photograph from my mobile phone.
+Although the right one is a rather boring photograph (I'm not a great photographer), it contains so much more detail than the left image.
+Many experiments on visual processing ask what it is about an image that allows us to detect a certain object in an image.
+But they do so with images like the ones on the left, and they might miss a lot of the factors that warn us not to step into the water on the right.</p>
+<p>In a <a href="https://doi.org/10.1101/578633">recent paper</a>, I explore how target detection works in more complex images.
+One callenge is these images is that we usually attempt to detect objects that are mixed with the background.
+They may have similar colors or may be partly occluded as the alligators in the image above.
+Furthermore, different lighting conditions may make similar objects appear quite similar.
+To mimic this situation in the lab, I used a model for natural images that describes a probability distribution over natural images.
+In recent years, a specific class of such models, called generative adversarial nets, has been shown to create extremely realistic images such as <a href="https://medium.com/syncedreview/biggan-a-new-state-of-the-art-in-image-synthesis-cf2ec5694024">these</a> or <a href="https://medium.com/syncedreview/gan-2-0-nvidias-hyperrealistic-face-generator-e3439d33ebaf">these</a>.
+I used these models to generate random images, but I added a constraint that the resulting images had to contain an edge segment in a certain part of the image.
+I then asked people to detect these edge segments.</p>
+<p>First of all, this is a very hard task.
+That's actually a good thing.
+In order to study how the visual system works, we have to push it to its absolute limits and force it to make mistakes.
+We can then ask where the system made mistakes and where it didn't and we can hope to learn something from that.
+The observers in my experiment looked at about 4000 such edge images and they were able to correctly detect the edge segment in about 75% of those.</p>
+<p>I wanted to have a quantitative measure of how well different classes of image features would contribute to the behaviour of my observers in this experiment.
+That's why I developed a number of observer models to describe the observers' behaviour.
+Such an observer model is a mathematical formula that takes a vector of pixel values (i.e. the image) as input and then returns a probability that the observer responded a certain way.
+There have been many different observer models proposed in the past.
+Often, they were rooted in more or less detailed understanding of the physiology of the visual system.
+In recent computational vision, one class of models has received a lot of attention.
+Convolutional neural networks are only very loosely rooted in knowledge of the visual system's physiology, but they are very powerful at recognizing objects in images and they form the basis of much of the excitement about A.I. these days.</p>
+<p>When I compared how well the physiologically inspired models and convolutional neural networks described human responses in this experiment, I found that both did about equally well.
+However, when I used these models to create another set of images that directly targeted a specific performance level, big differences emerged.</p>
+<p><img src="images/optimized_stimuli.svg" /></p>
+<p>The image shows example images for which the observer model is 95% certain that an observer would respond "left" (left column) or "right" (right column).
+In the first row, the images have been generated for a model based on much of our knowledge of the biology of early visual cortex.
+There clearly seems to be something on the left side when the model thinks a human would respond left and there clearly is something on the right side when the model thinks a human would respond right.
+Although these things don't really look too much like edges, they are reasonably close to edges.
+At least they have an orientation and the pixel's brightness changes in some consistent way.
+This is very different for the convolutional neural network model in the lower row.
+These images seem to have some wavy texture all over but there isn't really any clear left-right structure.
+In fact observers in the lab could, even with quite some practice, not tell the images generated by the convolutional neural network apart.</p>
+<p>This supports the idea that for an understanding of human visual perception, there is still a lot of value in knowing about the computational principles that underlie processing in the brain.</p></div>
+    <!--
+	<hr>
+	<h2>Comments</h2>
+    -->
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+<footer class="aw-footer bg-danger">
+	<div class="container"> <!-- footer -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<div class="row">
+					<div class="col-md-3">
+						<h4>Navigation</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="">fruendlab blog</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Author</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="https://github.com/fruendlab">github</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Categories</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="/category/publications.html">Publications (1)</a></li>
+							<li><a href="/category/statistics.html">Statistics (1)</a></li>
+							<li><a href="/category/stimuli-and-displays.html">Stimuli and displays (1)</a></li>
+							<li><a href="/category/theory.html">Theory (3)</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h4>Links</h4>
+						<ul class="list-unstyled my-list-style">
+							<li><a href="http://yorku.ca/ifruend">York University</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Ingo Fruend 2016</p>
+			<p>Powered by Pelican</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+</body>
+</html>
